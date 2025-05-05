@@ -50,8 +50,12 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
+import type { Item, CartItem } from '../types'
+
+export default defineComponent({
   name: 'AddToModal',
   props: {
     showModal: {
@@ -59,15 +63,9 @@ export default {
       default: false
     },
     item: {
-      type: Object,
-      required: true,
-      default: () => ({
-        id: 0,
-        title: '',
-        price: 0,
-        description: '',
-        image: ''
-      })
+      type: Object as PropType<Item | null>,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -90,14 +88,15 @@ export default {
     },
     magnifiedViewStyle() {
       // Calculate background position based on mouse position relative to image
-      if (!this.$refs.imageContainer) return {};
+      const imageContainer = this.$refs.imageContainer as HTMLElement | undefined;
+      if (!imageContainer) return {};
       
-      const rect = this.$refs.imageContainer.getBoundingClientRect();
+      const rect = imageContainer.getBoundingClientRect();
       const xRatio = this.mousePosition.x / rect.width;
       const yRatio = this.mousePosition.y / rect.height;
       
       return {
-        backgroundImage: this.item.image ? `url(${this.item.image})` : 'none',
+        backgroundImage: this.item?.image ? `url(${this.item.image})` : 'none',
         backgroundPosition: `${xRatio * 100}% ${yRatio * 100}%`,
         backgroundSize: `${this.zoomLevel * 100}%`
       }
@@ -125,19 +124,23 @@ export default {
       }
     },
     addToCart() {
-      this.$emit('add-to-cart', { 
-        ...this.item, 
-        quantity: this.quantity 
-      });
+      if (this.item) {
+        this.$emit('add-to-cart', { 
+          ...this.item, 
+          quantity: this.quantity 
+        } as CartItem);
+      }
       this.quantity = 1; // Reset quantity
       this.closeModal();
     },
-    handleMouseMove(event) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      this.mousePosition = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top
-      };
+    handleMouseMove(event: MouseEvent) {
+      if (event.currentTarget) {
+        const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        this.mousePosition = {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top
+        };
+      }
     },
     handleMouseEnter() {
       this.isImageMagnified = true;
@@ -146,7 +149,7 @@ export default {
       this.isImageMagnified = false;
     }
   }
-}
+})
 </script>
 
 <style scoped>
