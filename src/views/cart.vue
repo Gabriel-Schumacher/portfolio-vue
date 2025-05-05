@@ -19,7 +19,7 @@ const totalPrice = computed(() => {
 </script>
 
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto p-4 h-screen">
     <h1 class="text-2xl font-bold mb-4">Shopping Cart</h1>
     <div v-if="!cartItems || cartItems.length === 0" class="text-center">
       <p>Your cart is empty.</p>
@@ -42,6 +42,9 @@ const totalPrice = computed(() => {
       </ul>
       <div class="mt-4">
         <h2 class="text-xl font-bold">Total: ${{ totalPrice }}</h2>
+      </div>
+      <div>
+        <button class="btn bg-green-600 text-white">Checkout</button>
       </div>
     </div>
   </div>

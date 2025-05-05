@@ -101,6 +101,7 @@ const calculateTotal = computed(() => {
                   Edit Cart
                 </button>
                 <button 
+                  @click="navigateToCart"
                   class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
                 >
                   Checkout
@@ -113,7 +114,3 @@ const calculateTotal = computed(() => {
     </div>
   </nav>
 </template>
-
-<style scoped>
-/* Add any additional styles here */
-</style>
