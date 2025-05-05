@@ -8,6 +8,11 @@ const removeFromCart = inject('handleRemoveCartItem', (id: number) => {
   console.warn('Remove from cart function not provided');
 });
 
+// Add update quantity function
+const updateQuantity = inject('handleUpdateCartQuantity', (id: number, quantity: number) => {
+  console.warn('Update quantity function not provided');
+});
+
 const totalPrice = computed(() => {
   // Add a safeguard to ensure cartItems exists and is an array
   if (!cartItems || !Array.isArray(cartItems.value)) {
@@ -27,14 +32,27 @@ const totalPrice = computed(() => {
     <div v-else>
       <ul class="space-y-4">
         <li v-for="item in cartItems" :key="item.id" class="p-4 border-b">
-          <div  class="flex p-4">
+          <div class="flex p-4 gap-2">
             <div>
                 <img :src="item.image" alt="Product Image" class="w-16 h-16 object-cover mr-4">   
             </div>
-            <div>
+            <div class="flex-grow">
                 <h2 class="text-lg font-semibold">{{ item.title }}</h2>
-                <p>Quantity: {{ item.quantity }}</p>
-                <p>Price: ${{ item.price.toFixed(2) }}</p>
+                <div class="flex items-center mt-2">
+                  <span class="mr-2">Quantity:</span>
+                  <div class="flex items-center border rounded">
+                    <button 
+                      @click="updateQuantity(item.id, item.quantity - 1)" 
+                      class="px-2 py-1 bg-gray-100 hover:bg-gray-200"
+                      :disabled="item.quantity <= 1">−</button>
+                    <span class="px-3">{{ item.quantity }}</span>
+                    <button 
+                      @click="updateQuantity(item.id, item.quantity + 1)" 
+                      class="px-2 py-1 bg-gray-100 hover:bg-gray-200">+</button>
+                  </div>
+                </div>
+                <p class="mt-1">Price: ${{ item.price.toFixed(2) }}</p>
+                <p class="font-medium">Item Total: ${{ (item.price * item.quantity).toFixed(2) }}</p>
             </div>            
           </div>
           <button @click="removeFromCart(item.id)" class="text-red-500 hover:text-red-700 cursor-pointer">Remove</button>
@@ -44,7 +62,7 @@ const totalPrice = computed(() => {
         <h2 class="text-xl font-bold">Total: ${{ totalPrice }}</h2>
       </div>
       <div class="mt-4">
-        <button class="btn bg-green-600 text-white">Checkout</button>
+        <button class="btn bg-green-600 text-white px-4 py-2 rounded">Checkout</button>
       </div>
     </div>
   </div>

@@ -101,6 +101,25 @@
       cartItems.value.splice(itemIndex, 1);
     }
   };
+
+  // Function to handle updating cart item quantities
+  const handleUpdateCartQuantity = (itemId: number, newQuantity: number) => {
+    // Don't allow quantities less than 1
+    if (newQuantity < 1) return;
+    
+    const itemIndex = cartItems.value.findIndex(item => item.id === itemId);
+    
+    if (itemIndex >= 0) {
+      // Calculate the difference in quantity
+      const quantityDifference = newQuantity - cartItems.value[itemIndex].quantity;
+      
+      // Update the item quantity
+      cartItems.value[itemIndex].quantity = newQuantity;
+      
+      // Update the total cart count
+      cart.value += quantityDifference;
+    }
+  };
   
   // Provide shared state and functions to child components
   provide('filteredItems', filteredItems);
@@ -109,6 +128,7 @@
   provide('openAddToCartModal', openAddToCartModal);
   provide('cartItems', cartItems);
   provide('handleRemoveCartItem', handleRemoveCartItem);
+  provide('handleUpdateCartQuantity', handleUpdateCartQuantity);
 </script>
 
 <template>
