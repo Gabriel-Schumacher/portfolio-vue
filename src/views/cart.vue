@@ -10,10 +10,10 @@ const removeFromCart = inject('handleRemoveCartItem', (id: number) => {
 
 const totalPrice = computed(() => {
   // Add a safeguard to ensure cartItems exists and is an array
-  if (!cartItems || !Array.isArray(cartItems)) {
+  if (!cartItems || !Array.isArray(cartItems.value)) {
     return '0.00';
   }
-  return cartItems.reduce((total, item) => 
+  return cartItems.value.reduce((total, item) => 
     total + (item.price * item.quantity), 0).toFixed(2);
 });
 </script>
@@ -43,7 +43,7 @@ const totalPrice = computed(() => {
       <div class="mt-4">
         <h2 class="text-xl font-bold">Total: ${{ totalPrice }}</h2>
       </div>
-      <div>
+      <div class="mt-4">
         <button class="btn bg-green-600 text-white">Checkout</button>
       </div>
     </div>
