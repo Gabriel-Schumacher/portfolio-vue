@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { inject, computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import type { CartItem } from '../types';
 
+const router = useRouter();
 // Provide default empty array to avoid null/undefined issues
 const cartItems = inject<CartItem[]>('cartItems', ref([]));
 const removeFromCart = inject('handleRemoveCartItem', (id: number) => {
@@ -13,6 +15,16 @@ const updateQuantity = inject('handleUpdateCartQuantity', (id: number, quantity:
   console.warn('Update quantity function not provided');
 });
 
+// Add clear cart function
+const clearCart = inject('handleClearCart', () => {
+  console.warn('Clear cart function not provided');
+});
+
+// Add show notification function
+const showNotification = inject('handleShowNotification', (message: string) => {
+  console.warn('Show notification function not provided');
+});
+
 const totalPrice = computed(() => {
   // Add a safeguard to ensure cartItems exists and is an array
   if (!cartItems || !Array.isArray(cartItems.value)) {
@@ -21,6 +33,18 @@ const totalPrice = computed(() => {
   return cartItems.value.reduce((total, item) => 
     total + (item.price * item.quantity), 0).toFixed(2);
 });
+
+// Function to handle checkout process
+const handleCheckout = () => {
+  // Show thank you message
+  showNotification('Thank you for your purchase!');
+  
+  // Clear the cart
+  clearCart();
+  
+  // Redirect to shop page
+  router.push('/');
+};
 </script>
 
 <template>
@@ -62,7 +86,9 @@ const totalPrice = computed(() => {
         <h2 class="text-xl font-bold">Total: ${{ totalPrice }}</h2>
       </div>
       <div class="mt-4">
-        <button class="btn bg-green-600 text-white px-4 py-2 rounded">Checkout</button>
+        <button @click="handleCheckout" class="btn bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Confirm Order and Checkout
+        </button>
       </div>
     </div>
   </div>

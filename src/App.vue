@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, onMounted, computed, provide } from 'vue';
+  import { ref, onMounted, computed, provide, reactive } from 'vue';
   import NavBar from './components/NavBar.vue';
   import AddToModal from './components/AddToModal.vue';
   import type { Item as ItemType, CartItem } from './types';
@@ -120,6 +120,37 @@
       cart.value += quantityDifference;
     }
   };
+
+  // Fix the cart clearing function to use the correct variable name
+  const handleClearCart = () => {
+    cartItems.value = [];
+    cart.value = 0; // Changed from cartNumber.value to cart.value
+  };
+  provide('handleClearCart', handleClearCart);
+
+  // Notification functionality
+  const notification = reactive({
+    message: '',
+    visible: false,
+    timeout: null as number | null
+  });
+
+  const handleShowNotification = (message: string) => {
+    // Clear any existing timeout
+    if (notification.timeout) {
+      clearTimeout(notification.timeout);
+    }
+    
+    // Set notification message and make it visible
+    notification.message = message;
+    notification.visible = true;
+    
+    // Hide after 3 seconds
+    notification.timeout = setTimeout(() => {
+      notification.visible = false;
+    }, 3000);
+  };
+  provide('handleShowNotification', handleShowNotification);
   
   // Provide shared state and functions to child components
   provide('filteredItems', filteredItems);
@@ -151,4 +182,12 @@
     @close="showModal = false" 
     @add-to-cart="handleAddToCart" 
   />
+
+  <!-- Notification component -->
+  <div 
+    v-if="notification.visible"
+    class="fixed top-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-opacity"
+  >
+    {{ notification.message }}
+  </div>
 </template>
