@@ -1,14 +1,13 @@
 <script setup lang="ts">
-  import { ref, onMounted, computed } from 'vue';
+  import { ref, onMounted, computed, provide } from 'vue';
   import NavBar from './components/NavBar.vue';
-  import Item from './components/Item.vue';
-  import Categories from './components/Categories.vue';
   import AddToModal from './components/AddToModal.vue';
   import type { Item as ItemType, CartItem } from './types';
 
   let showModal = ref(false);
   let selectedItem = ref<ItemType | null>(null);
   let cart = ref(0);
+  let cartItems = ref<CartItem[]>([]);
 
   const data = ref<ItemType[] | null>(null);
   const categories = ref<string[]>([]);
@@ -57,28 +56,72 @@
   
   // Function to handle add to cart from modal
   const handleAddToCart = (itemWithQuantity: CartItem) => {
-    // Here you would add the logic to add the item to the cart
-    console.log('Item added to cart:', itemWithQuantity);
+    // Check if item is already in cart
+    const existingItemIndex = cartItems.value.findIndex(
+      item => item.id === itemWithQuantity.id
+    );
+    
+    if (existingItemIndex >= 0) {
+      // Update quantity if item is already in cart
+      cartItems.value[existingItemIndex].quantity += itemWithQuantity.quantity;
+    } else {
+      // Add new item to cart
+      cartItems.value.push(itemWithQuantity);
+    }
+    
     // Increment the cart counter
     cart.value += itemWithQuantity.quantity;
   };
+
+  // Function to handle editing cart items
+  const handleEditCartItem = (itemId: number, newQuantity: number) => {
+    const itemIndex = cartItems.value.findIndex(item => item.id === itemId);
+    
+    if (itemIndex >= 0) {
+      // Calculate the difference in quantity
+      const quantityDifference = newQuantity - cartItems.value[itemIndex].quantity;
+      
+      // Update the item quantity
+      cartItems.value[itemIndex].quantity = newQuantity;
+      
+      // Update the total cart count
+      cart.value += quantityDifference;
+    }
+  };
+  
+  // Function to handle removing cart items
+  const handleRemoveCartItem = (itemId: number) => {
+    const itemIndex = cartItems.value.findIndex(item => item.id === itemId);
+    
+    if (itemIndex >= 0) {
+      // Subtract the item's quantity from the cart total
+      cart.value -= cartItems.value[itemIndex].quantity;
+      
+      // Remove the item from cartItems
+      cartItems.value.splice(itemIndex, 1);
+    }
+  };
+  
+  // Provide shared state and functions to child components
+  provide('filteredItems', filteredItems);
+  provide('categories', categories);
+  provide('handleCategorySelected', handleCategorySelected);
+  provide('openAddToCartModal', openAddToCartModal);
+  provide('cartItems', cartItems);
+  provide('handleRemoveCartItem', handleRemoveCartItem);
 </script>
 
 <template>
-  <NavBar :cartNumber="cart" />
+  <NavBar 
+    :cartNumber="cart" 
+    :cartItems="cartItems" 
+    @edit-cart-item="handleEditCartItem" 
+    @remove-cart-item="handleRemoveCartItem" 
+  />
 
   <div class="bg-gray-100 pb-8">
     <div class="container w-[90%] mx-auto">
-      <h1 class="text-4xl py-4">Products</h1>          
-      <Categories :categories="categories" @categorySelected="handleCategorySelected" />
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 ">
-        <div v-for="item in filteredItems" :key="item.id" class="product ">
-          <Item :item="item" @add-to-cart="openAddToCartModal" />
-        </div>
-      </div>
-      <div v-if="filteredItems.length === 0" class="text-center py-8 text-gray-500">
-        No products found for the selected categories. Please select at least one category.
-      </div>
+      <router-view></router-view>
     </div>    
   </div>
   
