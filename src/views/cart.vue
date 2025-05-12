@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { inject, computed, ref } from 'vue';
+import type { Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import type { CartItem } from '../types';
 
 const router = useRouter();
 // Provide default empty array to avoid null/undefined issues
-const cartItems = inject<CartItem[]>('cartItems', ref([]));
+const cartItems = inject<Ref<CartItem[]>>('cartItems', ref<CartItem[]>([]));
 const removeFromCart = inject('handleRemoveCartItem', (id: number) => {
-  console.warn('Remove from cart function not provided');
+  console.warn('Remove from cart function not provided', id);
 });
 
 // Add update quantity function
 const updateQuantity = inject('handleUpdateCartQuantity', (id: number, quantity: number) => {
-  console.warn('Update quantity function not provided');
+  console.warn('Update quantity function not provided', id, quantity);
 });
 
 // Add clear cart function
@@ -22,15 +23,15 @@ const clearCart = inject('handleClearCart', () => {
 
 // Add show notification function
 const showNotification = inject('handleShowNotification', (message: string) => {
-  console.warn('Show notification function not provided');
+  console.warn('Show notification function not provided', message);
 });
 
 const totalPrice = computed(() => {
   // Add a safeguard to ensure cartItems exists and is an array
-  if (!cartItems || !Array.isArray(cartItems.value)) {
+  if (!cartItems || !Array.isArray(cartItems)) {
     return '0.00';
   }
-  return cartItems.value.reduce((total, item) => 
+  return cartItems.reduce((total, item) => 
     total + (item.price * item.quantity), 0).toFixed(2);
 });
 

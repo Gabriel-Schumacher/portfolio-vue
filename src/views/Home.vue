@@ -17,11 +17,18 @@
 import { inject } from 'vue';
 import Categories from '../components/Categories.vue';
 import Item from '../components/Item.vue';
-import type { Item as ItemType } from '../types';
 
 // Inject the shared state and functions from App.vue
-const filteredItems = inject('filteredItems');
-const categories = inject('categories');
-const handleCategorySelected = inject('handleCategorySelected');
-const openAddToCartModal = inject('openAddToCartModal');
+interface Item {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  image: string;
+}
+
+const filteredItems = inject<Item[]>('filteredItems') || [];
+const categories = inject<string[]>('categories') || [];
+const handleCategorySelected = inject<(...args: any[]) => any>('handleCategorySelected');
+const openAddToCartModal = inject<(...args: any[]) => void>('openAddToCartModal');
 </script>
