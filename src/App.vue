@@ -64,9 +64,11 @@
     if (existingItemIndex >= 0) {
       // Update quantity if item is already in cart
       cartItems.value[existingItemIndex].quantity += itemWithQuantity.quantity;
+      handleShowNotification(`Updated ${itemWithQuantity.title} quantity in cart`);
     } else {
       // Add new item to cart
       cartItems.value.push(itemWithQuantity);
+      handleShowNotification(`Added ${itemWithQuantity.title} to cart`);
     }
     
     // Increment the cart counter
