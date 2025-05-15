@@ -150,7 +150,7 @@
     // Hide after 3 seconds
     notification.timeout = setTimeout(() => {
       notification.visible = false;
-    }, 3000);
+    }, 2000);
   };
   provide('handleShowNotification', handleShowNotification);
   
@@ -188,7 +188,7 @@
   <!-- Notification component -->
   <div 
     v-if="notification.visible"
-    class="fixed top-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-opacity"
+    class="fixed top-20 right-4 bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-opacity"
   >
     {{ notification.message }}
   </div>

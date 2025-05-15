@@ -28,10 +28,10 @@ const showNotification = inject('handleShowNotification', (message: string) => {
 
 const totalPrice = computed(() => {
   // Add a safeguard to ensure cartItems exists and is an array
-  if (!cartItems || !Array.isArray(cartItems)) {
+  if (!cartItems.value || !Array.isArray(cartItems.value)) {
     return '0.00';
   }
-  return cartItems.reduce((total, item) => 
+  return cartItems.value.reduce((total, item) => 
     total + (item.price * item.quantity), 0).toFixed(2);
 });
 
